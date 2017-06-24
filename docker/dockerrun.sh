@@ -35,7 +35,7 @@ else
 from flup.server.fcgi import WSGIServer
 from supysonic.web import create_application
 app = create_application()
-WSGIServer(app, bindAddress = '/var/lib/supysonic/supysonic.sock').run()
+WSGIServer(app, bindAddress='/var/lib/supysonic/supysonic.sock', umask=0).run()
 EOF
       exec /usr/local/bin/python /tmp/supysonic.fcgi
       ;;

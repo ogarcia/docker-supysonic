@@ -10,7 +10,8 @@ RUN unzip supysonic.zip && rm supysonic.zip && mv supysonic-master app && \
   apk --no-progress del gcc musl-dev zlib-dev jpeg-dev && \
   adduser -S -D -H -h /var/lib/supysonic -s /sbin/nologin -G users \
   -g supysonic supysonic && mkdir -p /var/lib/supysonic && \
-  chown supysonic:users /var/lib/supysonic
+  chown supysonic:users /var/lib/supysonic && \
+  rm -rf /root/.ash_history /root/.cache /var/cache/apk/*
 
 COPY docker /app
 

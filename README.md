@@ -43,6 +43,7 @@ more about this settings).
 | --- | --- |
 | `SUPYSONIC_DB_URI` | sqlite:////var/lib/supysonic/supysonic.db |
 | `SUPYSONIC_SCANNER_EXTENSIONS` | |
+| `SUPYSONIC_SECRET_KEY` | |
 | `SUPYSONIC_WEBAPP_CACHE_DIR` | /var/lib/supysonic/cache |
 | `SUPYSONIC_WEBAPP_LOG_FILE` | /var/lib/supysonic/supysonic.log |
 | `SUPYSONIC_WEBAPP_LOG_LEVEL` | WARNING |

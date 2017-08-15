@@ -37,6 +37,7 @@ if __name__ == '__main__':
     config = Config('/var/lib/supysonic/.supysonic')
     config.set('base',   'database_uri', 'SUPYSONIC_DB_URI')
     config.set('base',   'scanner_extensions', 'SUPYSONIC_SCANNER_EXTENSIONS')
+    config.set('base',   'secret_key',   'SUPYSONIC_SECRET_KEY')
     config.set('webapp', 'cache_dir',    'SUPYSONIC_WEBAPP_CACHE_DIR')
     config.set('webapp', 'log_file',     'SUPYSONIC_WEBAPP_LOG_FILE')
     config.set('webapp', 'log_level',    'SUPYSONIC_WEBAPP_LOG_LEVEL')

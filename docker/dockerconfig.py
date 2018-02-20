@@ -6,13 +6,13 @@
 #
 # Distributed under terms of the GNU GPLv3 license.
 
-import ConfigParser
+import configparser
 import os
 
 class Config(object):
     def __init__(self, config_file='config.ini'):
         self.config_file = config_file
-        self.config = ConfigParser.ConfigParser()
+        self.config = configparser.ConfigParser()
         try:
             self.config.read(config_file)
         except Exception as e:

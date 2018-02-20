@@ -1,12 +1,15 @@
-FROM python:2-alpine3.6
+FROM python:3-alpine3.7
 
 ADD https://github.com/spl0k/supysonic/archive/master.zip /supysonic.zip
 
-RUN unzip supysonic.zip && rm supysonic.zip && mv supysonic-master app && \
+RUN unzip supysonic.zip && rm supysonic.zip && mkdir /app && \
   apk -U --no-progress upgrade && \
   apk -U --no-progress add gcc musl-dev zlib-dev jpeg-dev libjpeg-turbo && \
-  cd app && pip install -r requirements.txt && \
+  cd supysonic-master && pip install -r requirements.txt && \
   pip install flup && python setup.py install && \
+  mv /supysonic-master/cgi-bin/server.py /app && \
+  mv /supysonic-master/config.sample /app && \
+  cd / && rm -rf /supysonic-master && \
   apk --no-progress del gcc musl-dev zlib-dev jpeg-dev && \
   adduser -S -D -H -h /var/lib/supysonic -s /sbin/nologin -G users \
   -g supysonic supysonic && mkdir -p /var/lib/supysonic && \

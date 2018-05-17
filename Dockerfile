@@ -5,7 +5,7 @@ ADD https://github.com/spl0k/supysonic/archive/master.zip /supysonic.zip
 RUN unzip supysonic.zip && rm supysonic.zip && mkdir /app && \
   apk -U --no-progress upgrade && \
   apk --no-progress add gcc musl-dev zlib-dev jpeg-dev libjpeg-turbo && \
-  cd supysonic-master && python setup.py install && \
+  cd supysonic-master && pip install flup && python setup.py install && \
   mv /supysonic-master/cgi-bin/server.py /app && \
   mv /supysonic-master/config.sample /app && \
   cd / && rm -rf /supysonic-master && \

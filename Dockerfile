@@ -1,4 +1,4 @@
-FROM python:3-alpine3.7
+FROM python:3-alpine3.8
 
 ADD https://github.com/spl0k/supysonic/archive/master.zip /supysonic.zip
 

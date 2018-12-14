@@ -1,14 +1,14 @@
 FROM python:3-alpine3.8
 
-ADD https://github.com/spl0k/supysonic/archive/master.zip /supysonic.zip
+ADD https://github.com/spl0k/supysonic/archive/6b86f3a43aa80d57a249a5dd7d8e8fa2e4f3bfdd.zip /supysonic.zip
 
 RUN unzip supysonic.zip && rm supysonic.zip && mkdir /app && \
   apk -U --no-progress upgrade && \
   apk --no-progress add gcc musl-dev zlib-dev jpeg-dev libjpeg-turbo && \
-  cd supysonic-master && pip install flup && python setup.py install && \
-  mv /supysonic-master/cgi-bin/server.py /app && \
-  mv /supysonic-master/config.sample /app && \
-  cd / && rm -rf /supysonic-master && \
+  cd supysonic-* && pip install flup && python setup.py install && \
+  mv /supysonic-*/cgi-bin/server.py /app && \
+  mv /supysonic-*/config.sample /app && \
+  cd / && rm -rf /supysonic-* && \
   apk --no-progress del gcc musl-dev zlib-dev jpeg-dev && \
   adduser -S -D -H -h /var/lib/supysonic -s /sbin/nologin -G users \
   -g supysonic supysonic && mkdir -p /var/lib/supysonic && \

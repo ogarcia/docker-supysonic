@@ -1,6 +1,6 @@
-FROM python:3-alpine3.8
+FROM python:3-alpine3.9
 
-ADD https://github.com/spl0k/supysonic/archive/6b86f3a43aa80d57a249a5dd7d8e8fa2e4f3bfdd.zip /supysonic.zip
+ADD https://github.com/spl0k/supysonic/archive/5367f068e1ac826cfd5354b5b76818ba4b259ac2.zip /supysonic.zip
 
 RUN unzip supysonic.zip && rm supysonic.zip && mkdir /app && \
   apk -U --no-progress upgrade && \

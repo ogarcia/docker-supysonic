@@ -10,12 +10,13 @@ of GPLv3 license.
 This docker packages **Supysonic** under [Alpine Linux][3], a lightweight
 Linux distribution.
 
-Visit [Docker Hub][4] to see all available tags.
+Visit [Docker Hub][4] or [Quay][5] to see all available tags.
 
 [1]: https://github.com/spl0k/supysonic
 [2]: http://www.subsonic.org
 [3]: https://alpinelinux.org/
 [4]: https://hub.docker.com/r/ogarcia/supysonic/
+[5]: https://quay.io/repository/ogarcia/supysonic
 
 ## Run
 
@@ -37,7 +38,7 @@ using `admin` user with same password.
 ## Configuration via Docker variables
 
 The `dockerconfig.py` script that configures Supysonic use the following
-Docker environment variables (please refer to [Supysonic readme][5] to know
+Docker environment variables (please refer to [Supysonic readme][6] to know
 more about this settings).
 
 | Variable | Default value |
@@ -62,7 +63,7 @@ Take note that:
   `fcgi` to FastCGI file socket and `standalone` to run a debug server on
   port 5000.
 
-  [5]: https://github.com/spl0k/supysonic/blob/master/README.md
+[6]: https://github.com/spl0k/supysonic/blob/master/README.md
 
 ## Running a shell
 

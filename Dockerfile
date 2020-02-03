@@ -1,8 +1,10 @@
-FROM python:3-alpine3.9
+ARG PYTHON_VERSION
 
-ADD https://github.com/spl0k/supysonic/archive/70f18b981ab16cbbe1e4ee20974747d55ce297bd.zip /supysonic.zip
+FROM python:${PYTHON_VERSION}
+ARG SUPYSONIC_VERSION
+ADD https://github.com/spl0k/supysonic/archive/${SUPYSONIC_VERSION}.tar.gz /supysonic.tar.gz
 
-RUN unzip supysonic.zip && rm supysonic.zip && mkdir /app && \
+RUN tar xf supysonic.tar.gz && rm supysonic.tar.gz && mkdir /app && \
   apk -U --no-progress upgrade && \
   apk --no-progress add gcc musl-dev zlib-dev jpeg-dev libjpeg-turbo && \
   cd supysonic-* && pip install flup && python setup.py install && \
@@ -15,7 +17,7 @@ RUN unzip supysonic.zip && rm supysonic.zip && mkdir /app && \
   chown supysonic:users /var/lib/supysonic && \
   rm -rf /root/.ash_history /root/.cache /var/cache/apk/*
 
-COPY docker /app
+COPY .circleci/docker /app
 
 ENV \
   SUPYSONIC_DB_URI="sqlite:////var/lib/supysonic/supysonic.db" \
@@ -31,9 +33,6 @@ ENV \
   SUPYSONIC_RUN_MODE="fcgi"
 
 EXPOSE 5000
-
 VOLUME [ "/var/lib/supysonic", "/media" ]
-
 USER supysonic
-
 ENTRYPOINT [ "/app/dockerrun.sh" ]

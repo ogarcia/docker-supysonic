@@ -4,6 +4,9 @@ executors:
   docker-build-buster:
     docker:
       - image: circleci/buildpack-deps:buster
+  ubuntu-test:
+    machine:
+      - image: ubuntu-1604:201903-01
 
 jobs:
   build:
@@ -16,15 +19,24 @@ jobs:
           name: Build Docker image
           command: make docker-build
       - run:
-          name: Test Docker image
-          command: make docker-test
-      - run:
           name: Save Docker image
           command: DOCKER_IMAGE_FILENAME=image.tar make docker-save
       - persist_to_workspace:
           root: .
           paths:
             - ./image.tar
+  test:
+    executor: ubuntu-test
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - checkout
+      - run:
+          name: Load archived Docker image
+          command: DOCKER_IMAGE_FILENAME=/tmp/workspace/image.tar make docker-load
+      - run:
+          name: Test Docker image
+          command: make docker-test
   publish-dockerhub:
     executor: docker-build-buster
     steps:
@@ -64,7 +76,7 @@ workflows:
               only: /.*/
             branches:
               ignore: /.*/
-      - publish-dockerhub:
+      - test:
           requires:
             - build
           filters:
@@ -72,9 +84,17 @@ workflows:
               only: /.*/
             branches:
               ignore: /.*/
+      - publish-dockerhub:
+          requires:
+            - test
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
       - publish-quay:
           requires:
-            - build
+            - test
           filters:
             tags:
               only: /.*/

@@ -52,10 +52,10 @@ endif
 
 quay-push: check-quay-env
 	echo "${QUAY_PASSWORD}" | docker login -u "${QUAY_USERNAME}" --password-stdin quay.io
-	docker push $(DOCKER_ORGANIZATION)/$(DOCKER_IMAGE):latest quay.io
+	docker push quay.io/$(DOCKER_ORGANIZATION)/$(DOCKER_IMAGE):latest
 ifdef CIRCLE_TAG
 	docker tag $(DOCKER_ORGANIZATION)/$(DOCKER_IMAGE):latest $(DOCKER_ORGANIZATION)/$(DOCKER_IMAGE):${CIRCLE_TAG}
-	docker push $(DOCKER_ORGANIZATION)/$(DOCKER_IMAGE):${CIRCLE_TAG} quay.io
+	docker push quay.io/$(DOCKER_ORGANIZATION)/$(DOCKER_IMAGE):${CIRCLE_TAG}
 endif
 
 .PHONY: all check-dockerhub-env check-quay-env docker-build docker-test docker-save dockerhub-push quay-push

@@ -4,9 +4,6 @@ executors:
   docker-build-buster:
     docker:
       - image: circleci/buildpack-deps:buster
-  ubuntu-test:
-    machine:
-      - image: ubuntu-1604:201903-01
 
 jobs:
   build:
@@ -26,7 +23,8 @@ jobs:
           paths:
             - ./image.tar
   test:
-    executor: ubuntu-test
+    machine:
+      image: ubuntu-1604:201903-01
     steps:
       - attach_workspace:
           at: /tmp/workspace

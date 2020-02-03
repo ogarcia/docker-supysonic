@@ -68,20 +68,10 @@ workflows:
   version: 2
   build-tags:
     jobs:
-      - build:
-          filters:
-            tags:
-              only: /.*/
-            branches:
-              ignore: /.*/
+      - build
       - test:
           requires:
             - build
-          filters:
-            tags:
-              only: /.*/
-            branches:
-              ignore: /.*/
       - publish-dockerhub:
           requires:
             - test

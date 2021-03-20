@@ -1,24 +1,17 @@
+ARG ALPINE_VERSION
 ARG PYTHON_VERSION
 
 FROM python:${PYTHON_VERSION}
 ARG SUPYSONIC_VERSION
-ADD https://github.com/spl0k/supysonic/archive/${SUPYSONIC_VERSION}.tar.gz /supysonic.tar.gz
+COPY .circleci /supysonic/build
+ADD https://github.com/spl0k/supysonic/archive/${SUPYSONIC_VERSION}.tar.gz \
+  /supysonic/src/supysonic.tar.gz
+RUN /supysonic/build/build.sh
 
-RUN tar xf supysonic.tar.gz && rm supysonic.tar.gz && mkdir /app && \
-  apk -U --no-progress upgrade && \
-  apk --no-progress add gcc musl-dev zlib-dev jpeg-dev libjpeg-turbo && \
-  cd supysonic-* && pip install flup && python setup.py install && \
-  mv /supysonic-*/cgi-bin/server.py /app && \
-  mv /supysonic-*/config.sample /app && \
-  cd / && rm -rf /supysonic-* && \
-  apk --no-progress del gcc musl-dev zlib-dev jpeg-dev && \
-  adduser -S -D -H -h /var/lib/supysonic -s /sbin/nologin -G users \
-  -g supysonic supysonic && mkdir -p /var/lib/supysonic && \
-  chown supysonic:users /var/lib/supysonic && \
+FROM alpine:${ALPINE_VERSION}
+COPY --from=0 /supysonic/pkg /
+RUN apk add expat libffi libjpeg-turbo sqlite-libs && \
   rm -rf /root/.ash_history /root/.cache /var/cache/apk/*
-
-COPY .circleci/docker /app
-
 ENV \
   SUPYSONIC_DB_URI="sqlite:////var/lib/supysonic/supysonic.db" \
   SUPYSONIC_SCANNER_EXTENSIONS="" \
@@ -31,8 +24,7 @@ ENV \
   SUPYSONIC_LASTFM_API_KEY="" \
   SUPYSONIC_LASTFM_SECRET="" \
   SUPYSONIC_RUN_MODE="fcgi"
-
 EXPOSE 5000
 VOLUME [ "/var/lib/supysonic", "/media" ]
 USER supysonic
-ENTRYPOINT [ "/app/dockerrun.sh" ]
+ENTRYPOINT [ "/entrypoint.sh" ]

@@ -28,6 +28,7 @@ simply run.
 docker run -d \
   --name=supysonic \
   -v /srv/supysonic:/var/lib/supysonic \
+  -v /srv/supysonic/log:/var/log/supysonic \
   -v /media:/media \
   ogarcia/supysonic
 ```
@@ -47,9 +48,9 @@ more about this settings).
 | `SUPYSONIC_SCANNER_EXTENSIONS` | |
 | `SUPYSONIC_SECRET_KEY` | |
 | `SUPYSONIC_WEBAPP_CACHE_DIR` | /var/lib/supysonic/cache |
-| `SUPYSONIC_WEBAPP_LOG_FILE` | /var/lib/supysonic/supysonic.log |
+| `SUPYSONIC_WEBAPP_LOG_FILE` | /var/log/supysonic/supysonic.log |
 | `SUPYSONIC_WEBAPP_LOG_LEVEL` | WARNING |
-| `SUPYSONIC_DAEMON_LOG_FILE` | /var/lib/supysonic/supysonic-daemon.log |
+| `SUPYSONIC_DAEMON_LOG_FILE` | /var/log/supysonic/supysonic-daemon.log |
 | `SUPYSONIC_DAEMON_LOG_LEVEL` | INFO |
 | `SUPYSONIC_LASTFM_API_KEY` | |
 | `SUPYSONIC_LASTFM_SECRET` | |

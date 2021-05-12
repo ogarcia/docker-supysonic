@@ -29,7 +29,7 @@ function fcgi {
 from flup.server.fcgi import WSGIServer
 from supysonic.web import create_application
 app = create_application()
-WSGIServer(app, bindAddress='/var/lib/supysonic/supysonic.sock', umask=0).run()
+WSGIServer(app, bindAddress='${SUPYSONIC_FCGI_SOCKET}', umask=0).run()
 EOF
   exec /usr/local/bin/python /tmp/supysonic.fcgi
 }

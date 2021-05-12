@@ -38,9 +38,9 @@ using `admin` user with same password.
 
 ## Configuration via Docker variables
 
-The `dockerconfig.py` script that configures Supysonic use the following
-Docker environment variables (please refer to [Supysonic readme][6] to know
-more about this settings).
+The `configure.py` script that configures Supysonic use the following Docker
+environment variables (please refer to [Supysonic readme][6] to know more
+about this settings).
 
 | Variable | Default value |
 | --- | --- |
@@ -50,10 +50,12 @@ more about this settings).
 | `SUPYSONIC_WEBAPP_CACHE_DIR` | /var/lib/supysonic/cache |
 | `SUPYSONIC_WEBAPP_LOG_FILE` | /var/log/supysonic/supysonic.log |
 | `SUPYSONIC_WEBAPP_LOG_LEVEL` | WARNING |
+| `SUPYSONIC_DAEMON_SOCKET` | /var/lib/supysonic/supysonic-daemon.sock |
 | `SUPYSONIC_DAEMON_LOG_FILE` | /var/log/supysonic/supysonic-daemon.log |
 | `SUPYSONIC_DAEMON_LOG_LEVEL` | INFO |
 | `SUPYSONIC_LASTFM_API_KEY` | |
 | `SUPYSONIC_LASTFM_SECRET` | |
+| `SUPYSONIC_FCGI_SOCKET` | /var/lib/supysonic/supysonic.sock |
 | `SUPYSONIC_RUN_MODE` | fcgi |
 
 Take note that:

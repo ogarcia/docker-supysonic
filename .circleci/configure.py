@@ -41,6 +41,7 @@ if __name__ == '__main__':
     config.set('webapp', 'cache_dir',    'SUPYSONIC_WEBAPP_CACHE_DIR')
     config.set('webapp', 'log_file',     'SUPYSONIC_WEBAPP_LOG_FILE')
     config.set('webapp', 'log_level',    'SUPYSONIC_WEBAPP_LOG_LEVEL')
+    config.set('daemon', 'socket',       'SUPYSONIC_DAEMON_SOCKET')
     config.set('daemon', 'log_file',     'SUPYSONIC_DAEMON_LOG_FILE')
     config.set('daemon', 'log_level',    'SUPYSONIC_DAEMON_LOG_LEVEL')
     config.set('lastfm', 'api_key',      'SUPYSONIC_LASTFM_API_KEY')

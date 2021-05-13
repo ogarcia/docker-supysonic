@@ -23,6 +23,13 @@ then
   supysonic-cli user setroles --admin admin
 fi
 
+# Function to run optional daemon for background tasks
+function daemon {
+  [ "${SUPYSONIC_DAEMON_ENABLED}" == true ] && {
+    sleep 10 && /usr/local/bin/python3 -m supysonic.daemon &
+  }
+}
+
 # Function to make a small python fcgi script and run it
 function fcgi {
   cat > /tmp/supysonic.fcgi << EOF
@@ -49,13 +56,16 @@ if [ $# -gt 0 ];then
 else
   case ${SUPYSONIC_RUN_MODE} in
     fcgi)
+      daemon
       fcgi
       ;;
     standalone)
+      daemon
       standalone
       ;;
     *)
       echo "Run mode not recognized, switching to standalone debug server mode"
+      daemon
       standalone
       ;;
   esac

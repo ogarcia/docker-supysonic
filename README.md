@@ -50,6 +50,7 @@ about this settings).
 | `SUPYSONIC_WEBAPP_CACHE_DIR` | /var/lib/supysonic/cache |
 | `SUPYSONIC_WEBAPP_LOG_FILE` | /var/log/supysonic/supysonic.log |
 | `SUPYSONIC_WEBAPP_LOG_LEVEL` | WARNING |
+| `SUPYSONIC_DAEMON_ENABLED` | false |
 | `SUPYSONIC_DAEMON_SOCKET` | /var/lib/supysonic/supysonic-daemon.sock |
 | `SUPYSONIC_DAEMON_LOG_FILE` | /var/log/supysonic/supysonic-daemon.log |
 | `SUPYSONIC_DAEMON_LOG_LEVEL` | INFO |
@@ -79,3 +80,21 @@ docker exec -t -i supysonic /bin/sh
 
 Remember that `supysonic` is the run name, if you change it you must use the
 same here.
+
+## About Supysonic daemon
+
+Supysonic comes with an optional [daemon service][7] to perfom several tasks
+as library background scans or enable jukebox mode. The daemon is disabled
+by default in this Docker image, but you can enable it setting the Docker
+variable `SUPYSONIC_DAEMON_ENABLED` to `true`.
+
+If you don't use jukebox mode and don't want to have a running process
+wasting resources simply leave the variable as default and run the following
+command in a [`systemd.timer`][8] or `cron` to update your media library.
+
+```
+docker exec supysonic /usr/local/bin/supysonic-cli folder scan
+```
+
+[7]: https://supysonic.readthedocs.io/en/latest/setup/daemon.html
+[8]: https://www.freedesktop.org/software/systemd/man/systemd.timer.html

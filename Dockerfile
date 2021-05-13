@@ -20,6 +20,7 @@ ENV \
   SUPYSONIC_WEBAPP_CACHE_DIR="/var/lib/supysonic/cache" \
   SUPYSONIC_WEBAPP_LOG_FILE="/var/log/supysonic/supysonic.log" \
   SUPYSONIC_WEBAPP_LOG_LEVEL="WARNING" \
+  SUPYSONIC_DAEMON_ENABLED="false" \
   SUPYSONIC_DAEMON_SOCKET="/var/lib/supysonic/supysonic-daemon.sock" \
   SUPYSONIC_DAEMON_LOG_FILE="/var/log/supysonic/supysonic-daemon.log" \
   SUPYSONIC_DAEMON_LOG_LEVEL="INFO" \

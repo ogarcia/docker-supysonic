@@ -20,21 +20,51 @@ Visit [Docker Hub][4] or [Quay][5] to see all available tags.
 
 ## Run
 
-To run this container exposing Supysonic over a FastCGI file socket in the
-permanent data volume, mounting your `/media` and using sqlite backend,
-simply run.
-
+To run this container simply run.
 ```
 docker run -d \
   --name=supysonic \
-  -v /srv/supysonic:/var/lib/supysonic \
-  -v /srv/supysonic/log:/var/log/supysonic \
-  -v /media:/media \
+  -e SUPYSONIC_RUN_MODE=standalone \
+  -p 5000:5000
   ogarcia/supysonic
 ```
 
-This starts Supysonic with a preconfiguration in database so you can login
-using `admin` user with same password.
+This starts Supysonic in debug server mode over port 5000. You can go to
+http://localhost:5000 to see it running and login using `admin` user with
+same password.
+
+Warning: this is a basic run, all data will be destroyed after container
+stop and rm.
+
+## Volumes
+
+This container exports three volumes.
+
+* `/media`: to your media collection.
+* `/var/lib/supysonic`: Supysonic data, like database or sockets.
+* `/var/log/supysonic`: Supysonic logs.
+
+You can run the following to mount your media dir, store data and logs.
+```
+docker run -d \
+  --name=supysonic \
+  -v /my/supysonic/data:/var/lib/supysonic \
+  -v /my/supysonic/logs:/var/log/supysonic \
+  -v /my/media/directory:/media \
+  ogarcia/supysonic
+```
+
+Take note that you must create before the data directory
+`/my/supysonic/data` and logs directory `/my/supysonic/logs` and set
+ownership to UID/GID 100 in both, otherwise the main proccess will crash.
+```
+mkdir -p /my/supysonic/data /my/supysonic/logs
+chown -R 100:100 /my/supysonic/data /my/supysonic/logs
+```
+
+Once Supysonic has been started you will have a FastCGI file socket in the
+permanent data volume `/my/supysonic/data/supysonic.sock` that you can use
+with your web server.
 
 ## Configuration via Docker variables
 
@@ -91,7 +121,6 @@ variable `SUPYSONIC_DAEMON_ENABLED` to `true`.
 If you don't use jukebox mode and don't want to have a running process
 wasting resources simply leave the variable as default and run the following
 command in a [`systemd.timer`][8] or `cron` to update your media library.
-
 ```
 docker exec supysonic /usr/local/bin/supysonic-cli folder scan
 ```

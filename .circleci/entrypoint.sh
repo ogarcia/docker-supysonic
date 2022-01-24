@@ -1,7 +1,7 @@
 #! /bin/sh
 #
 # entrypoint.sh
-# Copyright (C) 2017-2021 Óscar García Amor <ogarcia@connectical.com>
+# Copyright (C) 2017-2022 Óscar García Amor <ogarcia@connectical.com>
 #
 # Distributed under terms of the GNU GPLv3 license.
 #

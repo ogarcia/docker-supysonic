@@ -10,7 +10,7 @@ RUN /supysonic/build/build.sh
 
 FROM alpine:${ALPINE_VERSION}
 COPY --from=0 /supysonic/pkg /
-RUN apk add expat libffi libjpeg-turbo sqlite-libs && \
+RUN apk add expat libffi libjpeg-turbo sqlite-libs ffmpeg && \
   chown supysonic:users /var/lib/supysonic /var/log/supysonic && \
   rm -rf /root/.ash_history /root/.cache /var/cache/apk/*
 ENV \

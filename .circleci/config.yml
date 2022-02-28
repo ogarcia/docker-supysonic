@@ -8,6 +8,12 @@ executors:
 jobs:
   build:
     executor: docker-cimg-base
+    parameters:
+      docker-tag:
+        type: string
+        default: base
+    environment:
+      DOCKER_TAG: << parameters.docker-tag >>
     steps:
       - checkout
       - setup_remote_docker:
@@ -17,26 +23,38 @@ jobs:
           command: make docker-build
       - run:
           name: Save Docker image
-          command: DOCKER_IMAGE_FILENAME=image.tar make docker-save
+          command: DOCKER_IMAGE_FILENAME=image_${DOCKER_TAG}.tar make docker-save
       - persist_to_workspace:
           root: .
           paths:
-            - ./image.tar
+            - ./image*.tar
   test:
     machine:
       image: ubuntu-1604:201903-01
+    parameters:
+      docker-tag:
+        type: string
+        default: base
+    environment:
+      DOCKER_TAG: << parameters.docker-tag >>
     steps:
       - attach_workspace:
           at: /tmp/workspace
       - checkout
       - run:
           name: Load archived Docker image
-          command: DOCKER_IMAGE_FILENAME=/tmp/workspace/image.tar make docker-load
+          command: DOCKER_IMAGE_FILENAME=/tmp/workspace/image_${DOCKER_TAG}.tar make docker-load
       - run:
           name: Test Docker image
           command: make docker-test
   publish-dockerhub:
     executor: docker-cimg-base
+    parameters:
+      docker-tag:
+        type: string
+        default: base
+    environment:
+      DOCKER_TAG: << parameters.docker-tag >>
     steps:
       - attach_workspace:
           at: /tmp/workspace
@@ -45,12 +63,18 @@ jobs:
           version: 20.10.2
       - run:
           name: Load archived Docker image
-          command: DOCKER_IMAGE_FILENAME=/tmp/workspace/image.tar make docker-load
+          command: DOCKER_IMAGE_FILENAME=/tmp/workspace/image_${DOCKER_TAG}.tar make docker-load
       - run:
           name: Push Docker image to Docker Hub
           command: make dockerhub-push
   publish-quay:
     executor: docker-cimg-base
+    parameters:
+      docker-tag:
+        type: string
+        default: base
+    environment:
+      DOCKER_TAG: << parameters.docker-tag >>
     steps:
       - attach_workspace:
           at: /tmp/workspace
@@ -59,14 +83,14 @@ jobs:
           version: 20.10.2
       - run:
           name: Load archived Docker image
-          command: DOCKER_IMAGE_FILENAME=/tmp/workspace/image.tar make docker-load
+          command: DOCKER_IMAGE_FILENAME=/tmp/workspace/image_${DOCKER_TAG}.tar make docker-load
       - run:
           name: Push Docker image to Quay.io
           command: make quay-push
 
 workflows:
   version: 2
-  build-deploy:
+  build-deploy-base:
     jobs:
       - build:
           filters:
@@ -87,6 +111,70 @@ workflows:
             branches:
               ignore: /.*/
       - publish-quay:
+          requires:
+            - test
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
+  build-deploy-ffmpeg:
+    jobs:
+      - build:
+          docker-tag: ffmpeg
+          filters:
+            tags:
+              only: /.*/
+      - test:
+          docker-tag: ffmpeg
+          requires:
+            - build
+          filters:
+            tags:
+              only: /.*/
+      - publish-dockerhub:
+          docker-tag: ffmpeg
+          requires:
+            - test
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
+      - publish-quay:
+          docker-tag: ffmpeg
+          requires:
+            - test
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
+  build-deploy-full:
+    jobs:
+      - build:
+          docker-tag: full
+          filters:
+            tags:
+              only: /.*/
+      - test:
+          docker-tag: full
+          requires:
+            - build
+          filters:
+            tags:
+              only: /.*/
+      - publish-dockerhub:
+          docker-tag: full
+          requires:
+            - test
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
+      - publish-quay:
+          docker-tag: full
           requires:
             - test
           filters:

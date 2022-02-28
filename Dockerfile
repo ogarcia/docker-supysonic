@@ -9,8 +9,9 @@ ADD https://github.com/spl0k/supysonic/archive/${SUPYSONIC_VERSION}.tar.gz \
 RUN /supysonic/build/build.sh
 
 FROM alpine:${ALPINE_VERSION}
+ARG EXTRA_PACKAGES
 COPY --from=0 /supysonic/pkg /
-RUN apk add expat libffi libjpeg-turbo sqlite-libs && \
+RUN apk add expat libffi libjpeg-turbo sqlite-libs ${EXTRA_PACKAGES} && \
   chown supysonic:users /var/lib/supysonic /var/log/supysonic && \
   rm -rf /root/.ash_history /root/.cache /var/cache/apk/*
 ENV \

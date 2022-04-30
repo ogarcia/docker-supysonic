@@ -15,7 +15,8 @@ apk --no-progress add gcc musl-dev zlib-dev jpeg-dev libjpeg-turbo
 
 # install python deps
 pip install flup
-
+pip install pymysql
+pip install psycopg2-binary
 # extract software
 cd /supysonic/src/
 tar xzf supysonic.tar.gz

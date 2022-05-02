@@ -25,7 +25,7 @@ ifndef QUAY_PASSWORD
 endif
 
 docker-build:
-	docker buildx build -t $(DOCKER_ORGANIZATION)/$(DOCKER_IMAGE):$(DOCKER_TAG) --build-arg ALPINE_VERSION=$(ALPINE_VERSION) --build-arg PYTHON_VERSION=$(PYTHON_VERSION)-alpine$(ALPINE_VERSION) --build-arg SUPYSONIC_VERSION=$(SUPYSONIC_VERSION) --build-arg EXTRA_PACKAGES="$(shell cat tags/$(DOCKER_TAG)-packages)" .
+	docker buildx build -t $(DOCKER_ORGANIZATION)/$(DOCKER_IMAGE):$(DOCKER_TAG) --build-arg ALPINE_VERSION=$(ALPINE_VERSION) --build-arg PYTHON_VERSION=$(PYTHON_VERSION)-alpine$(ALPINE_VERSION) --build-arg SUPYSONIC_VERSION=$(SUPYSONIC_VERSION) --build-arg DOCKER_TAG=$(DOCKER_TAG) --build-arg EXTRA_PACKAGES="$(shell cat tags/$(DOCKER_TAG)-packages)" .
 
 docker-test:
 	docker image inspect $(DOCKER_ORGANIZATION)/$(DOCKER_IMAGE):$(DOCKER_TAG)

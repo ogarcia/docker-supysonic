@@ -90,19 +90,46 @@ jobs:
 
 workflows:
   version: 2
-  build-deploy-base:
+  build-deploy:
     jobs:
       - build:
+          matrix:
+            parameters:
+              docker-tag:
+                - base
+                - sql
+                - ffmpeg
+                - ffmpeg-sql
+                - full
+                - full-sql
           filters:
             tags:
               only: /.*/
       - test:
+          matrix:
+            parameters:
+              docker-tag:
+                - base
+                - sql
+                - ffmpeg
+                - ffmpeg-sql
+                - full
+                - full-sql
           requires:
             - build
           filters:
             tags:
               only: /.*/
       - publish-dockerhub:
+          matrix:
+            parameters:
+              docker-tag:
+                - base
+                - sql
+                - ffmpeg
+                - ffmpeg-sql
+                - full
+                - full-sql
           requires:
             - test
           filters:
@@ -111,70 +138,15 @@ workflows:
             branches:
               ignore: /.*/
       - publish-quay:
-          requires:
-            - test
-          filters:
-            tags:
-              only: /.*/
-            branches:
-              ignore: /.*/
-  build-deploy-ffmpeg:
-    jobs:
-      - build:
-          docker-tag: ffmpeg
-          filters:
-            tags:
-              only: /.*/
-      - test:
-          docker-tag: ffmpeg
-          requires:
-            - build
-          filters:
-            tags:
-              only: /.*/
-      - publish-dockerhub:
-          docker-tag: ffmpeg
-          requires:
-            - test
-          filters:
-            tags:
-              only: /.*/
-            branches:
-              ignore: /.*/
-      - publish-quay:
-          docker-tag: ffmpeg
-          requires:
-            - test
-          filters:
-            tags:
-              only: /.*/
-            branches:
-              ignore: /.*/
-  build-deploy-full:
-    jobs:
-      - build:
-          docker-tag: full
-          filters:
-            tags:
-              only: /.*/
-      - test:
-          docker-tag: full
-          requires:
-            - build
-          filters:
-            tags:
-              only: /.*/
-      - publish-dockerhub:
-          docker-tag: full
-          requires:
-            - test
-          filters:
-            tags:
-              only: /.*/
-            branches:
-              ignore: /.*/
-      - publish-quay:
-          docker-tag: full
+          matrix:
+            parameters:
+              docker-tag:
+                - base
+                - sql
+                - ffmpeg
+                - ffmpeg-sql
+                - full
+                - full-sql
           requires:
             - test
           filters:

@@ -18,6 +18,28 @@ Visit [Docker Hub][4] or [Quay][5] to see all available tags.
 [4]: https://hub.docker.com/r/ogarcia/supysonic/
 [5]: https://quay.io/repository/ogarcia/supysonic
 
+## Available tags
+
+At this moment, the following images are building.
+
+- **base**: default Supysonic image with SQLite support.
+- **sql**: full SQL support (MySQL and PostgreSQL).
+- **ffmpeg**: base image with ffmpeg added for transcoding.
+- **ffmpeg-sql**: ffmpeg and full SQL support.
+- **full**: all transcoding packages added (see `tags/full-packages`).
+- **full-sql**: all packages and full SQL support.
+
+Tag format used is as following.
+
+- base: `base-VERSION`, `base`, `latest`
+- sql: `sql-VERSION`, `sql`
+- ffmpeg: `ffmpeg-VERSION`, `ffmpeg`
+- ffmpeg-sql: `ffmpeg-sql-VERSION`,  `ffmpeg-sql`
+- full: `full-VERSION`, `full`
+- full-sql: `full-sql-VERSION`, `full-sql`
+
+Old images are archived with format `TAG-VERSION`.
+
 ## Run
 
 To run this container simply run.

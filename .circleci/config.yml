@@ -89,7 +89,6 @@ jobs:
           command: make quay-push
 
 workflows:
-  version: 2
   build-deploy:
     jobs:
       - build:
@@ -116,7 +115,7 @@ workflows:
                 - full
                 - full-sql
           requires:
-            - build
+            - build-<< matrix.docker-tag >>
           filters:
             tags:
               only: /.*/
@@ -131,7 +130,7 @@ workflows:
                 - full
                 - full-sql
           requires:
-            - test
+            - test-<< matrix.docker-tag >>
           filters:
             tags:
               only: /.*/
@@ -148,7 +147,7 @@ workflows:
                 - full
                 - full-sql
           requires:
-            - test
+            - test-<< matrix.docker-tag >>
           filters:
             tags:
               only: /.*/

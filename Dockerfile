@@ -30,7 +30,8 @@ ENV \
   SUPYSONIC_LASTFM_API_KEY="" \
   SUPYSONIC_LASTFM_SECRET="" \
   SUPYSONIC_FCGI_SOCKET="/var/lib/supysonic/supysonic.sock" \
-  SUPYSONIC_RUN_MODE="fcgi"
+  SUPYSONIC_RUN_MODE="fcgi" \
+  SUPYSONIC_FLASK_ENV="development"
 EXPOSE 5000
 VOLUME [ "/var/lib/supysonic", "/var/log/supysonic", "/media" ]
 USER supysonic

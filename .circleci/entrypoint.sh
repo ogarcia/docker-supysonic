@@ -45,7 +45,7 @@ EOF
 function standalone {
   FLASK_APP="supysonic.web:create_application()"
   export FLASK_APP
-  FLASK_ENV=development
+  FLASK_ENV=$SUPYSONIC_FLASK_ENV
   export FLASK_ENV
   flask run -h 0.0.0.0
 }

@@ -41,6 +41,18 @@ EOF
   exec /usr/local/bin/python /tmp/supysonic.fcgi
 }
 
+# Function to make a small python fcgi script that listen in a port and run it
+function fcgiport {
+  cat > /tmp/supysonic-port.fcgi << EOF
+from flup.server.fcgi import WSGIServer
+from supysonic.web import create_application
+app = create_application()
+WSGIServer(app, bindAddress=('0.0.0.0', ${SUPYSONIC_FCGI_PORT})).run()
+EOF
+  exec /usr/local/bin/python /tmp/supysonic-port.fcgi
+}
+
+
 # Function to run standalone
 function standalone {
   FLASK_APP="supysonic.web:create_application()"
@@ -58,6 +70,10 @@ else
     fcgi)
       daemon
       fcgi
+      ;;
+    fcgi-port)
+      daemon
+      fcgiport
       ;;
     standalone)
       daemon

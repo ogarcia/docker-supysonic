@@ -108,6 +108,7 @@ about this settings).
 | `SUPYSONIC_DAEMON_LOG_LEVEL` | INFO |
 | `SUPYSONIC_LASTFM_API_KEY` | |
 | `SUPYSONIC_LASTFM_SECRET` | |
+| `SUPYSONIC_FCGI_PORT` | 5000 |
 | `SUPYSONIC_FCGI_SOCKET` | /var/lib/supysonic/supysonic.sock |
 | `SUPYSONIC_RUN_MODE` | fcgi |
 
@@ -116,8 +117,8 @@ Take note that:
 - Other parts of Supysonic config file that not are referred here (as
   transcoding or mimetypes) will be untouched, you can configure it by hand.
 - At this moment the supported values for `SUPYSONIC_RUN_MODE` are only
-  `fcgi` to FastCGI file socket and `standalone` to run a debug server on
-  port 5000.
+  `fcgi` to FastCGI file socket, `fcgi-port` to FastCGI listen in a port and
+  `standalone` to run a debug server on port 5000.
 
 [6]: https://github.com/spl0k/supysonic/blob/master/README.md
 

@@ -120,6 +120,7 @@ workflows:
             tags:
               only: /.*/
       - publish-dockerhub:
+          context: dockerhub
           matrix:
             parameters:
               docker-tag:
@@ -137,6 +138,7 @@ workflows:
             branches:
               ignore: /.*/
       - publish-quay:
+          context: quay-og
           matrix:
             parameters:
               docker-tag:

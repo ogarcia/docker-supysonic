@@ -137,17 +137,17 @@ same here.
 
 ## About Supysonic daemon
 
-Supysonic comes with an optional [daemon service][7] to perfom several tasks
+Supysonic comes with an optional [daemon service][8] to perfom several tasks
 as library background scans or enable jukebox mode. The daemon is disabled
 by default in this container image, but you can enable it setting the
 container variable `SUPYSONIC_DAEMON_ENABLED` to `true`.
 
 If you don't use jukebox mode and don't want to have a running process
 wasting resources simply leave the variable as default and run the following
-command in a [`systemd.timer`][8] or `cron` to update your media library.
+command in a [`systemd.timer`][9] or `cron` to update your media library.
 ```
 docker exec supysonic /usr/local/bin/supysonic-cli folder scan
 ```
 
-[7]: https://supysonic.readthedocs.io/en/latest/setup/daemon.html
-[8]: https://www.freedesktop.org/software/systemd/man/systemd.timer.html
+[8]: https://supysonic.readthedocs.io/en/latest/setup/daemon.html
+[9]: https://www.freedesktop.org/software/systemd/man/systemd.timer.html

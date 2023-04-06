@@ -15,7 +15,7 @@ apk --no-progress add gcc musl-dev zlib-dev jpeg-dev libjpeg-turbo
 
 # install python deps
 pip install flup
-[[ ${DOCKER_TAG} == *sql ]] && \
+[[ ${CONTAINER_TAG} == *sql ]] && \
   pip install pymysql && \
   pip install psycopg2-binary
 

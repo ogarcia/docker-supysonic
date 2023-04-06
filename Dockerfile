@@ -6,8 +6,8 @@ ARG SUPYSONIC_VERSION
 COPY .circleci /supysonic/build
 ADD https://github.com/spl0k/supysonic/archive/${SUPYSONIC_VERSION}.tar.gz \
   /supysonic/src/supysonic.tar.gz
-ARG DOCKER_TAG
-ENV DOCKER_TAG=${DOCKER_TAG}
+ARG CONTAINER_TAG
+ENV CONTAINER_TAG=${CONTAINER_TAG}
 RUN /supysonic/build/build.sh
 
 FROM alpine:${ALPINE_VERSION}

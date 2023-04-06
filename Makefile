@@ -1,12 +1,28 @@
-ALPINE_VERSION := 3.17
-PYTHON_VERSION := 3.11
-SUPYSONIC_VERSION := ba1fbf4b73ba8d7afe89e52904d2186e187b9678
-DOCKER_ORGANIZATION := ogarcia
-DOCKER_IMAGE := supysonic
-DOCKER_TAG ?= base
-DOCKER_IMAGE_FILENAME ?= $(DOCKER_ORGANIZATION)_$(DOCKER_IMAGE)_$(DOCKER_TAG).tar
+ALPINE_VERSION := 3.17.3
+PYTHON_VERSION := 3.11.3-alpine3.17
+SUPYSONIC_VERSION := f3e743dece4057084327f1c59735db54ebe371e0
+CONTAINER_ORGANIZATION := ogarcia
+CONTAINER_IMAGE := supysonic
+CONTAINER_ARCHITECTURES := linux/amd64,linux/arm/v7,linux/arm64
+CONTAINER_TAG ?= base
+TAGS := -t $(CONTAINER_ORGANIZATION)/$(CONTAINER_IMAGE):master-$(CONTAINER_TAG)
+TAGS += -t quay.io/$(CONTAINER_ORGANIZATION)/$(CONTAINER_IMAGE):master-$(CONTAINER_TAG)
+TAGS += -t ghcr.io/$(CONTAINER_ORGANIZATION)/$(CONTAINER_IMAGE):master-$(CONTAINER_TAG)
+ifdef CIRCLE_TAG
+	TAGS := -t $(CONTAINER_ORGANIZATION)/$(CONTAINER_IMAGE):$(CONTAINER_TAG)
+	TAGS += -t quay.io/$(CONTAINER_ORGANIZATION)/$(CONTAINER_IMAGE):$(CONTAINER_TAG)
+	TAGS += -t ghcr.io/$(CONTAINER_ORGANIZATION)/$(CONTAINER_IMAGE):$(CONTAINER_TAG)
+	TAGS += -t $(CONTAINER_ORGANIZATION)/$(CONTAINER_IMAGE):${CIRCLE_TAG}-$(CONTAINER_TAG)
+	TAGS += -t quay.io/$(CONTAINER_ORGANIZATION)/$(CONTAINER_IMAGE):${CIRCLE_TAG}-$(CONTAINER_TAG)
+	TAGS += -t ghcr.io/$(CONTAINER_ORGANIZATION)/$(CONTAINER_IMAGE):${CIRCLE_TAG}-$(CONTAINER_TAG)
+	ifeq ($(CONTAINER_TAG),base)
+		TAGS += -t $(CONTAINER_ORGANIZATION)/$(CONTAINER_IMAGE):latest
+		TAGS += -t quay.io/$(CONTAINER_ORGANIZATION)/$(CONTAINER_IMAGE):latest
+		TAGS += -t ghcr.io/$(CONTAINER_ORGANIZATION)/$(CONTAINER_IMAGE):latest
+	endif
+endif
 
-all: docker-build docker-test
+all: docker-build
 
 check-dockerhub-env:
 ifndef DOCKERHUB_USERNAME
@@ -24,50 +40,25 @@ ifndef QUAY_PASSWORD
 	$(error QUAY_PASSWORD is undefined)
 endif
 
+check-github-registry-env:
+ifndef GITHUB_REGISTRY_USERNAME
+	$(error GITHUB_REGISTRY_USERNAME is undefined)
+endif
+ifndef GITHUB_REGISTRY_PASSWORD
+	$(error GITHUB_REGISTRY_PASSWORD is undefined)
+endif
+
 docker-build:
-	docker buildx build -t $(DOCKER_ORGANIZATION)/$(DOCKER_IMAGE):$(DOCKER_TAG) --build-arg ALPINE_VERSION=$(ALPINE_VERSION) --build-arg PYTHON_VERSION=$(PYTHON_VERSION)-alpine$(ALPINE_VERSION) --build-arg SUPYSONIC_VERSION=$(SUPYSONIC_VERSION) --build-arg DOCKER_TAG=$(DOCKER_TAG) --build-arg EXTRA_PACKAGES="$(shell cat tags/$(DOCKER_TAG)-packages)" .
+	docker build -t $(CONTAINER_ORGANIZATION)/$(CONTAINER_IMAGE):$(CONTAINER_TAG) --build-arg ALPINE_VERSION=$(ALPINE_VERSION) --build-arg PYTHON_VERSION=$(PYTHON_VERSION) --build-arg SUPYSONIC_VERSION=$(SUPYSONIC_VERSION) --build-arg CONTAINER_TAG=$(CONTAINER_TAG) --build-arg EXTRA_PACKAGES="$(shell cat tags/$(CONTAINER_TAG)-packages)" .
 
-docker-test:
-	docker image inspect $(DOCKER_ORGANIZATION)/$(DOCKER_IMAGE):$(DOCKER_TAG)
-	docker run --name $(DOCKER_IMAGE) -d -e SUPYSONIC_RUN_MODE="standalone" -p 5000:5000 $(DOCKER_ORGANIZATION)/$(DOCKER_IMAGE):$(DOCKER_TAG)
-	sleep 5
-	curl -v -L 'http://localhost:5000/user/login' --data 'user=admin&password=admin'
-	docker kill $(DOCKER_IMAGE)
-	docker rm $(DOCKER_IMAGE)
+docker-buildx:
+	docker buildx build -t $(CONTAINER_ORGANIZATION)/$(CONTAINER_IMAGE):$(CONTAINER_TAG) --platform $(CONTAINER_ARCHITECTURES) --build-arg ALPINE_VERSION=$(ALPINE_VERSION) --build-arg PYTHON_VERSION=$(PYTHON_VERSION) --build-arg SUPYSONIC_VERSION=$(SUPYSONIC_VERSION) --build-arg CONTAINER_TAG=$(CONTAINER_TAG) --build-arg EXTRA_PACKAGES="$(shell cat tags/$(CONTAINER_TAG)-packages)" .
 
-docker-save:
-	docker image inspect $(DOCKER_ORGANIZATION)/$(DOCKER_IMAGE):$(DOCKER_TAG) > /dev/null 2>&1
-	docker save -o $(DOCKER_IMAGE_FILENAME) $(DOCKER_ORGANIZATION)/$(DOCKER_IMAGE):$(DOCKER_TAG)
-
-docker-load:
-ifneq ($(wildcard $(DOCKER_IMAGE_FILENAME)),)
-	docker load -i $(DOCKER_IMAGE_FILENAME)
-endif
-
-dockerhub-push: check-dockerhub-env
+container-buildx-push: check-dockerhub-env check-quay-env check-github-registry-env
 	echo "${DOCKERHUB_PASSWORD}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
-	docker push $(DOCKER_ORGANIZATION)/$(DOCKER_IMAGE):$(DOCKER_TAG)
-ifeq ($(DOCKER_TAG),base)
-	docker tag $(DOCKER_ORGANIZATION)/$(DOCKER_IMAGE):$(DOCKER_TAG) $(DOCKER_ORGANIZATION)/$(DOCKER_IMAGE):latest
-	docker push $(DOCKER_ORGANIZATION)/$(DOCKER_IMAGE):latest
-endif
-ifdef CIRCLE_TAG
-	docker tag $(DOCKER_ORGANIZATION)/$(DOCKER_IMAGE):$(DOCKER_TAG) $(DOCKER_ORGANIZATION)/$(DOCKER_IMAGE):$(DOCKER_TAG)-${CIRCLE_TAG}
-	docker push $(DOCKER_ORGANIZATION)/$(DOCKER_IMAGE):$(DOCKER_TAG)-${CIRCLE_TAG}
-endif
-
-quay-push: check-quay-env
 	echo "${QUAY_PASSWORD}" | docker login -u "${QUAY_USERNAME}" --password-stdin quay.io
-	docker tag $(DOCKER_ORGANIZATION)/$(DOCKER_IMAGE):$(DOCKER_TAG) quay.io/$(DOCKER_ORGANIZATION)/$(DOCKER_IMAGE):$(DOCKER_TAG)
-	docker push quay.io/$(DOCKER_ORGANIZATION)/$(DOCKER_IMAGE):$(DOCKER_TAG)
-ifeq ($(DOCKER_TAG),base)
-	docker tag $(DOCKER_ORGANIZATION)/$(DOCKER_IMAGE):$(DOCKER_TAG) quay.io/$(DOCKER_ORGANIZATION)/$(DOCKER_IMAGE):latest
-	docker push quay.io/$(DOCKER_ORGANIZATION)/$(DOCKER_IMAGE):latest
-endif
-ifdef CIRCLE_TAG
-	docker tag $(DOCKER_ORGANIZATION)/$(DOCKER_IMAGE):$(DOCKER_TAG) quay.io/$(DOCKER_ORGANIZATION)/$(DOCKER_IMAGE):$(DOCKER_TAG)-${CIRCLE_TAG}
-	docker push quay.io/$(DOCKER_ORGANIZATION)/$(DOCKER_IMAGE):$(DOCKER_TAG)-${CIRCLE_TAG}
-endif
+	echo "${GITHUB_REGISTRY_PASSWORD}" | docker login -u "${GITHUB_REGISTRY_USERNAME}" --password-stdin ghcr.io
+	docker buildx build $(TAGS) --platform $(CONTAINER_ARCHITECTURES) --build-arg ALPINE_VERSION=$(ALPINE_VERSION) --build-arg PYTHON_VERSION=$(PYTHON_VERSION) --build-arg SUPYSONIC_VERSION=$(SUPYSONIC_VERSION) --build-arg CONTAINER_TAG=$(CONTAINER_TAG) --build-arg EXTRA_PACKAGES="$(shell cat tags/$(CONTAINER_TAG)-packages)" --push .
 
-.PHONY: all check-dockerhub-env check-quay-env docker-build docker-test docker-save dockerhub-push quay-push
+.PHONY: all check-dockerhub-env check-quay-env check-github-registry-env container-build container-buildx container-buildx-push
 # vim:ft=make

@@ -1,4 +1,4 @@
-# Supysonic docker [![CircleCI](https://circleci.com/gh/ogarcia/docker-supysonic.svg?style=svg)](https://circleci.com/gh/ogarcia/docker-supysonic)
+# Supysonic container [![CircleCI](https://circleci.com/gh/ogarcia/docker-supysonic.svg?style=svg)](https://circleci.com/gh/ogarcia/docker-supysonic)
 
 (c) 2017-2023 Óscar García Amor
 
@@ -7,16 +7,17 @@ of GPLv3 license.
 
 [Supysonic][1] is a Python implementation of the [Subsonic][2] server API.
 
-This docker packages **Supysonic** under [Alpine Linux][3], a lightweight
+This container packages **Supysonic** under [Alpine Linux][3], a lightweight
 Linux distribution.
 
-Visit [Docker Hub][4] or [Quay][5] to see all available tags.
+Visit [Docker Hub][4], [Quay][5] or [GitHub][6] to see all available tags.
 
 [1]: https://github.com/spl0k/supysonic
 [2]: http://www.subsonic.org
 [3]: https://alpinelinux.org/
 [4]: https://hub.docker.com/r/ogarcia/supysonic/
 [5]: https://quay.io/repository/ogarcia/supysonic
+[6]: https://github.com/users/ogarcia/packages/container/package/supysonic
 
 ## Available tags
 
@@ -31,14 +32,14 @@ At this moment, the following images are building.
 
 Tag format used is as following.
 
-- base: `base-VERSION`, `base`, `latest`
-- sql: `sql-VERSION`, `sql`
-- ffmpeg: `ffmpeg-VERSION`, `ffmpeg`
-- ffmpeg-sql: `ffmpeg-sql-VERSION`,  `ffmpeg-sql`
-- full: `full-VERSION`, `full`
-- full-sql: `full-sql-VERSION`, `full-sql`
+- base: `VERSION-base`, `base`, `latest`
+- sql: `VERSION-sql`, `sql`
+- ffmpeg: `VERSION-ffmpeg`, `ffmpeg`
+- ffmpeg-sql: `VERSION-ffmpeg-sql`,  `ffmpeg-sql`
+- full: `VERSION-full`, `full`
+- full-sql: `VERSION-full-sql`, `full-sql`
 
-Old images are archived with format `TAG-VERSION`.
+Old images are archived with format `VERSION-TAG`.
 
 ## Run
 
@@ -88,11 +89,11 @@ Once Supysonic has been started you will have a FastCGI file socket in the
 permanent data volume `/my/supysonic/data/supysonic.sock` that you can use
 with your web server.
 
-## Configuration via Docker variables
+## Configuration via container variables
 
-The `configure.py` script that configures Supysonic use the following Docker
-environment variables (please refer to [Supysonic readme][6] to know more
-about this settings).
+The `configure.py` script that configures Supysonic use the following
+container environment variables (please refer to [Supysonic readme][7] to
+know more about this settings).
 
 | Variable | Default value |
 | --- | --- |
@@ -113,19 +114,19 @@ about this settings).
 | `SUPYSONIC_RUN_MODE` | fcgi |
 
 Take note that:
-- The paths are related to INSIDE Docker.
+- The paths are related to INSIDE container.
 - Other parts of Supysonic config file that not are referred here (as
   transcoding or mimetypes) will be untouched, you can configure it by hand.
 - At this moment the supported values for `SUPYSONIC_RUN_MODE` are only
   `fcgi` to FastCGI file socket, `fcgi-port` to FastCGI listen in a port and
   `standalone` to run a debug server on port 5000.
 
-[6]: https://github.com/spl0k/supysonic/blob/master/README.md
+[7]: https://github.com/spl0k/supysonic/blob/master/README.md
 
 ## Running a shell
 
 If you need to enter in a shell to use `supysonic-cli` first run Supysonic
-Docker as daemon and then enter on it with following command.
+container as daemon and then enter on it with following command.
 
 ```
 docker exec -t -i supysonic /bin/sh
@@ -138,8 +139,8 @@ same here.
 
 Supysonic comes with an optional [daemon service][7] to perfom several tasks
 as library background scans or enable jukebox mode. The daemon is disabled
-by default in this Docker image, but you can enable it setting the Docker
-variable `SUPYSONIC_DAEMON_ENABLED` to `true`.
+by default in this container image, but you can enable it setting the
+container variable `SUPYSONIC_DAEMON_ENABLED` to `true`.
 
 If you don't use jukebox mode and don't want to have a running process
 wasting resources simply leave the variable as default and run the following

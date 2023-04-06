@@ -6,95 +6,36 @@ executors:
       - image: cimg/base:stable
 
 jobs:
-  build:
+  build-and-publish:
     executor: docker-cimg-base
     parameters:
-      docker-tag:
+      container-tag:
         type: string
         default: base
     environment:
-      DOCKER_TAG: << parameters.docker-tag >>
+      CONTAINER_TAG: << parameters.container-tag >>
     steps:
       - checkout
       - setup_remote_docker:
-          version: 20.10.14
+          version: 20.10.18
       - run:
-          name: Build Docker image
-          command: make docker-build
+          name: Create a new builder instance
+          command: docker buildx create --use
       - run:
-          name: Save Docker image
-          command: DOCKER_IMAGE_FILENAME=image_${DOCKER_TAG}.tar make docker-save
-      - persist_to_workspace:
-          root: .
-          paths:
-            - ./image*.tar
-  test:
-    machine:
-      image: ubuntu-2204:2022.04.1
-    parameters:
-      docker-tag:
-        type: string
-        default: base
-    environment:
-      DOCKER_TAG: << parameters.docker-tag >>
-    steps:
-      - attach_workspace:
-          at: /tmp/workspace
-      - checkout
-      - run:
-          name: Load archived Docker image
-          command: DOCKER_IMAGE_FILENAME=/tmp/workspace/image_${DOCKER_TAG}.tar make docker-load
-      - run:
-          name: Test Docker image
-          command: make docker-test
-  publish-dockerhub:
-    executor: docker-cimg-base
-    parameters:
-      docker-tag:
-        type: string
-        default: base
-    environment:
-      DOCKER_TAG: << parameters.docker-tag >>
-    steps:
-      - attach_workspace:
-          at: /tmp/workspace
-      - checkout
-      - setup_remote_docker:
-          version: 20.10.14
-      - run:
-          name: Load archived Docker image
-          command: DOCKER_IMAGE_FILENAME=/tmp/workspace/image_${DOCKER_TAG}.tar make docker-load
-      - run:
-          name: Push Docker image to Docker Hub
-          command: make dockerhub-push
-  publish-quay:
-    executor: docker-cimg-base
-    parameters:
-      docker-tag:
-        type: string
-        default: base
-    environment:
-      DOCKER_TAG: << parameters.docker-tag >>
-    steps:
-      - attach_workspace:
-          at: /tmp/workspace
-      - checkout
-      - setup_remote_docker:
-          version: 20.10.14
-      - run:
-          name: Load archived Docker image
-          command: DOCKER_IMAGE_FILENAME=/tmp/workspace/image_${DOCKER_TAG}.tar make docker-load
-      - run:
-          name: Push Docker image to Quay.io
-          command: make quay-push
+          name: Build and publish
+          command: make CONTAINER_TAG=${CONTAINER_TAG} container-buildx-push
 
 workflows:
   build-deploy:
     jobs:
-      - build:
+      - build-and-publish:
+          context:
+            - dockerhub
+            - quay-og
+            - github-registry
           matrix:
             parameters:
-              docker-tag:
+              container-tag:
                 - base
                 - sql
                 - ffmpeg
@@ -104,54 +45,3 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - test:
-          matrix:
-            parameters:
-              docker-tag:
-                - base
-                - sql
-                - ffmpeg
-                - ffmpeg-sql
-                - full
-                - full-sql
-          requires:
-            - build-<< matrix.docker-tag >>
-          filters:
-            tags:
-              only: /.*/
-      - publish-dockerhub:
-          context: dockerhub
-          matrix:
-            parameters:
-              docker-tag:
-                - base
-                - sql
-                - ffmpeg
-                - ffmpeg-sql
-                - full
-                - full-sql
-          requires:
-            - test-<< matrix.docker-tag >>
-          filters:
-            tags:
-              only: /.*/
-            branches:
-              ignore: /.*/
-      - publish-quay:
-          context: quay-og
-          matrix:
-            parameters:
-              docker-tag:
-                - base
-                - sql
-                - ffmpeg
-                - ffmpeg-sql
-                - full
-                - full-sql
-          requires:
-            - test-<< matrix.docker-tag >>
-          filters:
-            tags:
-              only: /.*/
-            branches:
-              ignore: /.*/

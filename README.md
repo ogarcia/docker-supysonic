@@ -1,6 +1,6 @@
 # Supysonic container [![CircleCI](https://circleci.com/gh/ogarcia/docker-supysonic.svg?style=svg)](https://circleci.com/gh/ogarcia/docker-supysonic)
 
-(c) 2017-2023 Óscar García Amor
+(c) 2017-2024 Óscar García Amor
 
 Redistribution, modifications and pull requests are welcomed under the terms
 of GPLv3 license.

@@ -1,0 +1,80 @@
+variables:
+  QUAY_REGISTRY_IMAGE: quay.io/connectical/supysonic
+
+stages:
+  - Container
+
+Build and push container image:
+  stage: Container
+  image: docker
+  services:
+    - docker:dind
+  script:
+    - |
+      for REGISTRY_IMAGE in "${CI_REGISTRY_IMAGE}" "${QUAY_REGISTRY_IMAGE}"; do
+        TAGS="${TAGS} --tag ${REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}-${CONTAINER_TAG}"
+      done
+    - docker context create builder
+    - docker buildx create builder --use
+    - docker login -u gitlab-ci-token -p ${CI_JOB_TOKEN} ${CI_REGISTRY}
+    - docker login -u ${QUAY_USERNAME} -p ${QUAY_PASSWORD} quay.io
+    - source .env
+    - |
+      docker buildx build --push \
+        --platform linux/amd64,linux/arm64,linux/arm/v7 \
+        --build-arg ALPINE_VERSION=${ALPINE_VERSION} \
+        --build-arg PYTHON_VERSION=${PYTHON_VERSION} \
+        --build-arg SUPYSONIC_VERSION=${SUPYSONIC_VERSION} \
+        --build-arg CONTAINER_TAG=${CONTAINER_TAG} \
+        --build-arg EXTRA_PACKAGES="$(cat tags/${CONTAINER_TAG}-packages)" \
+        ${TAGS} .
+  parallel:
+    matrix:
+      - CONTAINER_TAG:
+        - base
+        - sql
+        - ffmpeg
+        - ffmpeg-sql
+        - full
+        - full-sql
+  rules:
+    - if: $CI_COMMIT_TAG == null && $CI_COMMIT_REF_PROTECTED == "true"
+
+Build and push tagged container image:
+  stage: Container
+  image: docker
+  services:
+    - docker:dind
+  script:
+    - |
+      for REGISTRY_IMAGE in "${CI_REGISTRY_IMAGE}" "${QUAY_REGISTRY_IMAGE}"; do
+        TAGS="${TAGS} --tag ${REGISTRY_IMAGE}:${CI_COMMIT_TAG}-${CONTAINER_TAG} --tag ${REGISTRY_IMAGE}:${CONTAINER_TAG}"
+        if [[ "${CONTAINER_TAG}" == "base" ]]; then
+          TAGS="${TAGS} --tag ${REGISTRY_IMAGE}:latest"
+        fi
+      done
+    - docker context create builder
+    - docker buildx create builder --use
+    - docker login -u gitlab-ci-token -p ${CI_JOB_TOKEN} ${CI_REGISTRY}
+    - docker login -u ${QUAY_USERNAME} -p ${QUAY_PASSWORD} quay.io
+    - source .env
+    - |
+      docker buildx build --push \
+        --platform linux/amd64,linux/arm64,linux/arm/v7 \
+        --build-arg ALPINE_VERSION=${ALPINE_VERSION} \
+        --build-arg PYTHON_VERSION=${PYTHON_VERSION} \
+        --build-arg SUPYSONIC_VERSION=${SUPYSONIC_VERSION} \
+        --build-arg CONTAINER_TAG=${CONTAINER_TAG} \
+        --build-arg EXTRA_PACKAGES="$(cat tags/${CONTAINER_TAG}-packages)" \
+        ${TAGS} .
+  parallel:
+    matrix:
+      - CONTAINER_TAG:
+        - base
+        - sql
+        - ffmpeg
+        - ffmpeg-sql
+        - full
+        - full-sql
+  rules:
+    - if: $CI_COMMIT_TAG

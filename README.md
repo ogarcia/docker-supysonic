@@ -1,23 +1,26 @@
-# Supysonic container [![CircleCI](https://circleci.com/gh/ogarcia/docker-supysonic.svg?style=svg)](https://circleci.com/gh/ogarcia/docker-supysonic)
+# Supysonic container
 
-(c) 2017-2024 Óscar García Amor
+[![forthebadge](https://forthebadge.com/images/badges/gluten-free.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/images/badges/uses-python.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/images/badges/it-works-dont-know-how.svg)](https://forthebadge.com)
+
+(c) 2017-2024 [Connectical] Óscar García Amor
 
 Redistribution, modifications and pull requests are welcomed under the terms
 of GPLv3 license.
 
-[Supysonic][1] is a Python implementation of the [Subsonic][2] server API.
+[Supysonic][sy] is a Python implementation of the [Subsonic][sb] server API.
 
-This container packages **Supysonic** under [Alpine Linux][3], a lightweight
+This container packages **Supysonic** under [Alpine Linux][al], a lightweight
 Linux distribution.
 
-Visit [Docker Hub][4], [Quay][5] or [GitHub][6] to see all available tags.
+Visit [Quay][qu] or [GitLab][gl] to see all available tags.
 
-[1]: https://github.com/spl0k/supysonic
-[2]: http://www.subsonic.org
-[3]: https://alpinelinux.org/
-[4]: https://hub.docker.com/r/ogarcia/supysonic/
-[5]: https://quay.io/repository/ogarcia/supysonic
-[6]: https://github.com/users/ogarcia/packages/container/package/supysonic
+[sy]: https://github.com/spl0k/supysonic
+[sb]: http://www.subsonic.org
+[al]: https://alpinelinux.org/
+[qu]: https://quay.io/repository/connectical/supysonic
+[gl]: https://gitlab.com/connectical/container/supysonic/container_registry
 
 ## Available tags
 
@@ -45,11 +48,12 @@ Old images are archived with format `VERSION-TAG`.
 
 To run this container simply run.
 ```
+alias docker="podman" # If you are using podman
 docker run -d \
   --name=supysonic \
   -e SUPYSONIC_RUN_MODE=standalone \
   -p 5000:5000
-  ogarcia/supysonic
+  registry.gitlab.com/connectical/container/supysonic
 ```
 
 This starts Supysonic in debug server mode over port 5000. You can go to
@@ -69,12 +73,13 @@ This container exports three volumes.
 
 You can run the following to mount your media dir, store data and logs.
 ```
+alias docker="podman" # If you are using podman
 docker run -d \
   --name=supysonic \
   -v /my/supysonic/data:/var/lib/supysonic \
   -v /my/supysonic/logs:/var/log/supysonic \
   -v /my/media/directory:/media \
-  ogarcia/supysonic
+  registry.gitlab.com/connectical/container/supysonic
 ```
 
 Take note that you must create before the data directory
@@ -92,7 +97,7 @@ with your web server.
 ## Configuration via container variables
 
 The `configure.py` script that configures Supysonic use the following
-container environment variables (please refer to [Supysonic readme][7] to
+container environment variables (please refer to [Supysonic readme][sr] to
 know more about this settings).
 
 | Variable | Default value |
@@ -121,7 +126,7 @@ Take note that:
   `fcgi` to FastCGI file socket, `fcgi-port` to FastCGI listen in a port and
   `standalone` to run a debug server on port 5000.
 
-[7]: https://github.com/spl0k/supysonic/blob/master/README.md
+[sr]: https://github.com/spl0k/supysonic/blob/master/README.md
 
 ## Running a shell
 
@@ -137,17 +142,17 @@ same here.
 
 ## About Supysonic daemon
 
-Supysonic comes with an optional [daemon service][8] to perfom several tasks
-as library background scans or enable jukebox mode. The daemon is disabled
-by default in this container image, but you can enable it setting the
-container variable `SUPYSONIC_DAEMON_ENABLED` to `true`.
+Supysonic comes with an optional [daemon service][ds] to perfom several
+tasks as as library background scans or enable jukebox mode. The daemon is
+disabled by default in this container image, but you can enable it setting
+the container variable `SUPYSONIC_DAEMON_ENABLED` to `true`.
 
 If you don't use jukebox mode and don't want to have a running process
 wasting resources simply leave the variable as default and run the following
-command in a [`systemd.timer`][9] or `cron` to update your media library.
+command in a [`systemd.timer`][st] or `cron` to update your media library.
 ```
 docker exec supysonic /usr/local/bin/supysonic-cli folder scan
 ```
 
-[8]: https://supysonic.readthedocs.io/en/latest/setup/daemon.html
-[9]: https://www.freedesktop.org/software/systemd/man/systemd.timer.html
+[ds]: https://supysonic.readthedocs.io/en/latest/setup/daemon.html
+[st]: https://www.freedesktop.org/software/systemd/man/systemd.timer.html

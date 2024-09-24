@@ -13,10 +13,9 @@ apk -U --no-progress upgrade
 apk --no-progress add gcc musl-dev zlib-dev jpeg-dev libjpeg-turbo
 
 # install python deps
-pip install flup
+pip install setuptools flup
 [[ ${CONTAINER_TAG} == *sql ]] && \
-  pip install pymysql && \
-  pip install psycopg2-binary
+  pip install pymysql psycopg2-binary
 
 # extract software
 cd /supysonic/src/

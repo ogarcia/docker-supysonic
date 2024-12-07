@@ -10,7 +10,7 @@
 apk -U --no-progress upgrade
 
 # install build deps
-apk --no-progress add gcc musl-dev zlib-dev jpeg-dev libjpeg-turbo
+apk --no-progress add gcc musl-dev sqlite-dev zlib-dev jpeg-dev libjpeg-turbo
 
 # install python deps
 pip install setuptools flup

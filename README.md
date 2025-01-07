@@ -4,7 +4,7 @@
 [![forthebadge](https://forthebadge.com/images/badges/uses-python.svg)](https://forthebadge.com)
 [![forthebadge](https://forthebadge.com/images/badges/it-works-dont-know-how.svg)](https://forthebadge.com)
 
-(c) 2017-2024 [Connectical] Óscar García Amor
+(c) 2017-2025 [Connectical] Óscar García Amor
 
 Redistribution, modifications and pull requests are welcomed under the terms
 of GPLv3 license.

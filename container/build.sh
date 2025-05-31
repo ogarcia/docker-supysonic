@@ -13,7 +13,7 @@ apk -U --no-progress upgrade
 apk --no-progress add gcc musl-dev sqlite-dev zlib-dev jpeg-dev libjpeg-turbo
 
 # install python deps
-pip install setuptools flup
+pip install flup
 [[ ${CONTAINER_TAG} == *sql ]] && \
   pip install pymysql psycopg2-binary
 
@@ -23,7 +23,7 @@ tar xzf supysonic.tar.gz
 
 # install supysonic
 cd supysonic-*
-python setup.py install
+pip install .
 
 # create supysonic package
 install -d -m755 "/supysonic/pkg/usr/bin"
@@ -36,7 +36,6 @@ install -d -m755 -o100 -g100 "/supysonic/pkg/var/lib/supysonic" \
   "/supysonic/pkg/var/log/supysonic"
 
 # create supysonic user
-deluser utmp # remove utmp to reuse uid 100
 adduser -S -D -H -h /var/lib/supysonic -s /sbin/nologin -G users \
   -g supysonic supysonic
 install -d -m755 "/supysonic/pkg/etc"

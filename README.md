@@ -1,8 +1,8 @@
 # Supysonic container
 
-[![forthebadge](https://forthebadge.com/images/badges/gluten-free.svg)](https://forthebadge.com)
-[![forthebadge](https://forthebadge.com/images/badges/uses-python.svg)](https://forthebadge.com)
-[![forthebadge](https://forthebadge.com/images/badges/it-works-dont-know-how.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/badges/gluten-free.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/badges/made-with-python.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/badges/60-percent-of-the-time-works-every-time.svg)](https://forthebadge.com)
 
 (c) 2017-2025 [Connectical] Óscar García Amor
 

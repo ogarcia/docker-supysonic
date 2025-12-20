@@ -13,7 +13,9 @@ RUN /supysonic/build/build.sh
 FROM docker.io/alpine:${ALPINE_VERSION}
 ARG EXTRA_PACKAGES
 COPY --from=0 /supysonic/pkg /
-RUN apk add expat libffi libjpeg-turbo sqlite-libs ${EXTRA_PACKAGES} && \
+RUN adduser -S -D -H -h /var/lib/supysonic -s /sbin/nologin -G users \
+  -g supysonic supysonic && \
+  apk add expat libffi libjpeg-turbo sqlite-libs ${EXTRA_PACKAGES} && \
   chown supysonic:users /var/lib/supysonic /var/log/supysonic && \
   rm -rf /root/.ash_history /root/.cache /var/cache/apk/*
 ENV \

@@ -34,11 +34,3 @@ install -m755 "/supysonic/build/entrypoint.sh" \
 mv "/usr/local" "/supysonic/pkg/usr"
 install -d -m755 -o100 -g100 "/supysonic/pkg/var/lib/supysonic" \
   "/supysonic/pkg/var/log/supysonic"
-
-# create supysonic user
-adduser -S -D -H -h /var/lib/supysonic -s /sbin/nologin -G users \
-  -g supysonic supysonic
-install -d -m755 "/supysonic/pkg/etc"
-install -m644 "/etc/passwd" "/supysonic/pkg/etc/passwd"
-install -m644 "/etc/group" "/supysonic/pkg/etc/group"
-install -m640 -gshadow "/etc/shadow" "/supysonic/pkg/etc/shadow"

@@ -4,7 +4,7 @@
 [![forthebadge](https://forthebadge.com/badges/made-with-python.svg)](https://forthebadge.com)
 [![forthebadge](https://forthebadge.com/badges/60-percent-of-the-time-works-every-time.svg)](https://forthebadge.com)
 
-(c) 2017-2025 [Connectical] Óscar García Amor
+(c) 2017-2026 [Connectical] Óscar García Amor
 
 Redistribution, modifications and pull requests are welcomed under the terms
 of GPLv3 license.

@@ -15,7 +15,7 @@ ARG EXTRA_PACKAGES
 COPY --from=0 /supysonic/pkg /
 RUN adduser -S -D -H -h /var/lib/supysonic -s /sbin/nologin -G users \
   -g supysonic supysonic && \
-  apk add expat libffi libjpeg-turbo sqlite-libs ${EXTRA_PACKAGES} && \
+  apk add expat libffi libjpeg-turbo sqlite-libs zstd ${EXTRA_PACKAGES} && \
   chown supysonic:users /var/lib/supysonic /var/log/supysonic && \
   rm -rf /root/.ash_history /root/.cache /var/cache/apk/*
 ENV \

@@ -1,4 +1,5 @@
 variables:
+  BUILDX_NO_DEFAULT_ATTESTATIONS: 1
   QUAY_REGISTRY_IMAGE: quay.io/connectical/supysonic
 
 stages:

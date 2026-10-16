@@ -1,158 +1,103 @@
 # Supysonic container
 
-[![forthebadge](https://forthebadge.com/badges/gluten-free.svg)](https://forthebadge.com)
-[![forthebadge](https://forthebadge.com/badges/made-with-python.svg)](https://forthebadge.com)
-[![forthebadge](https://forthebadge.com/badges/60-percent-of-the-time-works-every-time.svg)](https://forthebadge.com)
+**This project is no longer maintained and will not receive further updates.**
 
 (c) 2017-2026 [Connectical] Óscar García Amor
 
-Redistribution, modifications and pull requests are welcomed under the terms
-of GPLv3 license.
+For years this repository packaged [Supysonic][sy] under [Alpine Linux][al].
+It has been retired, simply because I no longer run Supysonic myself: these
+days I use [Tocata][to], and a container I don't use is a container I end up
+neglecting. No new images will be built, neither for new Supysonic commits
+nor for new Alpine base images. The images already published on [Quay][qu]
+and [GitLab][gl] stay where they are, but they will not get any security
+fixes.
 
-[Supysonic][sy] is a Python implementation of the [Subsonic][sb] server API.
+The last state of the repository, with the `Containerfile`, the tag variants
+and the full documentation, is kept in the [`archive`][ar] branch for anybody
+who wants to keep building it on their own.
 
-This container packages **Supysonic** under [Alpine Linux][al], a lightweight
-Linux distribution.
-
-Visit [Quay][qu] or [GitLab][gl] to see all available tags.
+This is not a judgement on Supysonic, which I have contributed to and which
+remains a solid project. If it suits you, keep using it.
 
 [sy]: https://github.com/spl0k/supysonic
-[sb]: http://www.subsonic.org
 [al]: https://alpinelinux.org/
 [qu]: https://quay.io/repository/connectical/supysonic
 [gl]: https://gitlab.com/connectical/container/supysonic/container_registry
+[ar]: https://gitlab.com/connectical/container/supysonic/-/tree/archive
 
-## Available tags
+## Tocata and Supysonic
 
-At this moment, the following images are building.
+[Tocata][to] is an [OpenSubsonic][os] compatible music server written in
+Rust. Its presentation page, with screenshots of the panel, is at
+[tocata.ogarcia.me][tw]. Both servers speak the same family of protocols, so
+your players keep working; what changes is what sits behind them.
 
-- **base**: default Supysonic image with SQLite support.
-- **sql**: full SQL support (MySQL and PostgreSQL).
-- **ffmpeg**: base image with ffmpeg added for transcoding.
-- **ffmpeg-sql**: ffmpeg and full SQL support.
-- **full**: all transcoding packages added (see `tags/full-packages`).
-- **full-sql**: all packages and full SQL support.
+[to]: https://github.com/ogarcia/tocata
+[os]: https://opensubsonic.netlify.app/
+[tw]: https://tocata.ogarcia.me/
 
-Tag format used is as following.
+### Where Tocata is better
 
-- base: `VERSION-base`, `base`, `latest`
-- sql: `VERSION-sql`, `sql`
-- ffmpeg: `VERSION-ffmpeg`, `ffmpeg`
-- ffmpeg-sql: `VERSION-ffmpeg-sql`,  `ffmpeg-sql`
-- full: `VERSION-full`, `full`
-- full-sql: `VERSION-full-sql`, `full-sql`
+- **One static binary.** Server and administration panel ship in a single
+  binary, statically linked against musl. No Python runtime, no FastCGI
+  socket and no web server in front of it. An official image is published by
+  the project, so a custom container like this one is not needed.
+- **Much lighter and faster.** It indexes a collection of almost twelve
+  thousand songs and plays them in around twenty megabytes of memory.
+- **Everything from the panel.** Collections, users, who may reach which
+  collection, scans and their results are managed from the web panel, with no
+  CLI and no separate daemon to keep running.
+- **OpenSubsonic extensions.** API keys (`apiKeyAuthentication`), timed lyrics
+  (`songLyrics`), top songs by artist, playback reports and index based play
+  queues.
+- **Careful authentication.** Passwords stored as Argon2id hashes, panel
+  sessions that can be listed and closed one by one, and per-client API keys
+  that can be revoked individually.
 
-Old images are archived with format `VERSION-TAG`.
+### Where Supysonic is still the better choice
 
-## Run
+Being honest, there are things Supysonic does and Tocata does not, by design:
 
-To run this container simply run.
-```
+- **Transcoding.** Supysonic can transcode on the fly with ffmpeg or other
+  tools (the `ffmpeg` and `full` tags of this image). Tocata serves files
+  exactly as they are on disk and has no transcoder in it. If you stream to
+  mobile devices over slow links, or keep formats your players cannot decode,
+  this matters.
+- **Other database backends.** Supysonic can use MySQL or PostgreSQL besides
+  SQLite (the `sql` tags of this image). Tocata only uses SQLite. If you run a
+  large installation, or prefer your data in a database server you already
+  operate and back up, Supysonic fits better.
+- **Jukebox mode.** Supysonic's daemon can play music through the speakers
+  attached to the server. Tocata does not answer `jukeboxControl`.
+- **Last.fm.** Supysonic scrobbles to Last.fm. Tocata scrobbles through the
+  ListenBrainz protocol instead.
+
+If none of those is something you rely on, moving to Tocata is
+straightforward.
+
+### Quick start
+
+```sh
 alias docker="podman" # If you are using podman
-docker run -d \
-  --name=supysonic \
-  -e SUPYSONIC_RUN_MODE=standalone \
-  -p 5000:5000
-  registry.gitlab.com/connectical/container/supysonic
+docker run -d --name tocata \
+  -p 4224:4224 \
+  -v tocata-data:/data \
+  -v /my/media/directory:/media:ro \
+  ghcr.io/ogarcia/tocata:latest
 ```
 
-This starts Supysonic in debug server mode over port 5000. You can go to
-http://localhost:5000 to see it running and login using `admin` user with
-same password.
+On the first run Tocata creates an `admin` account and writes its generated
+password to the log, once. The panel is then at http://localhost:4224/, where
+you add `/media` (or a directory inside it) as a collection and start the
+first scan.
 
-Warning: this is a basic run, all data will be destroyed after container
-stop and rm.
+Nothing is carried over from Supysonic: Tocata builds its own catalogue from
+the music files, so users, stars and playlists have to be set up again. In
+your players, change the server address and use either an API key or the
+plain (legacy) password authentication: token authentication is refused on
+purpose, since it cannot coexist with hashed passwords.
 
-## Volumes
+Everything else, from prebuilt binaries to environment variables and
+authentication details, is in the [Tocata README][tr].
 
-This container exports three volumes.
-
-* `/media`: to your media collection.
-* `/var/lib/supysonic`: Supysonic data, like database or sockets.
-* `/var/log/supysonic`: Supysonic logs.
-
-You can run the following to mount your media dir, store data and logs.
-```
-alias docker="podman" # If you are using podman
-docker run -d \
-  --name=supysonic \
-  -v /my/supysonic/data:/var/lib/supysonic \
-  -v /my/supysonic/logs:/var/log/supysonic \
-  -v /my/media/directory:/media \
-  registry.gitlab.com/connectical/container/supysonic
-```
-
-Take note that you must create before the data directory
-`/my/supysonic/data` and logs directory `/my/supysonic/logs` and set
-ownership to UID/GID 100 in both, otherwise the main proccess will crash.
-```
-mkdir -p /my/supysonic/data /my/supysonic/logs
-chown -R 100:100 /my/supysonic/data /my/supysonic/logs
-```
-
-Once Supysonic has been started you will have a FastCGI file socket in the
-permanent data volume `/my/supysonic/data/supysonic.sock` that you can use
-with your web server.
-
-## Configuration via container variables
-
-The `configure.py` script that configures Supysonic use the following
-container environment variables (please refer to [Supysonic readme][sr] to
-know more about this settings).
-
-| Variable | Default value |
-| --- | --- |
-| `SUPYSONIC_DB_URI` | sqlite:////var/lib/supysonic/supysonic.db |
-| `SUPYSONIC_SCANNER_EXTENSIONS` | |
-| `SUPYSONIC_SECRET_KEY` | |
-| `SUPYSONIC_WEBAPP_CACHE_DIR` | /var/lib/supysonic/cache |
-| `SUPYSONIC_WEBAPP_LOG_FILE` | /var/log/supysonic/supysonic.log |
-| `SUPYSONIC_WEBAPP_LOG_LEVEL` | WARNING |
-| `SUPYSONIC_DAEMON_ENABLED` | false |
-| `SUPYSONIC_DAEMON_SOCKET` | /var/lib/supysonic/supysonic-daemon.sock |
-| `SUPYSONIC_DAEMON_LOG_FILE` | /var/log/supysonic/supysonic-daemon.log |
-| `SUPYSONIC_DAEMON_LOG_LEVEL` | INFO |
-| `SUPYSONIC_LASTFM_API_KEY` | |
-| `SUPYSONIC_LASTFM_SECRET` | |
-| `SUPYSONIC_FCGI_PORT` | 5000 |
-| `SUPYSONIC_FCGI_SOCKET` | /var/lib/supysonic/supysonic.sock |
-| `SUPYSONIC_RUN_MODE` | fcgi |
-
-Take note that:
-- The paths are related to INSIDE container.
-- Other parts of Supysonic config file that not are referred here (as
-  transcoding or mimetypes) will be untouched, you can configure it by hand.
-- At this moment the supported values for `SUPYSONIC_RUN_MODE` are only
-  `fcgi` to FastCGI file socket, `fcgi-port` to FastCGI listen in a port and
-  `standalone` to run a debug server on port 5000.
-
-[sr]: https://github.com/spl0k/supysonic/blob/master/README.md
-
-## Running a shell
-
-If you need to enter in a shell to use `supysonic-cli` first run Supysonic
-container as daemon and then enter on it with following command.
-
-```
-docker exec -t -i supysonic /bin/sh
-```
-
-Remember that `supysonic` is the run name, if you change it you must use the
-same here.
-
-## About Supysonic daemon
-
-Supysonic comes with an optional [daemon service][ds] to perfom several
-tasks as as library background scans or enable jukebox mode. The daemon is
-disabled by default in this container image, but you can enable it setting
-the container variable `SUPYSONIC_DAEMON_ENABLED` to `true`.
-
-If you don't use jukebox mode and don't want to have a running process
-wasting resources simply leave the variable as default and run the following
-command in a [`systemd.timer`][st] or `cron` to update your media library.
-```
-docker exec supysonic /usr/local/bin/supysonic-cli folder scan
-```
-
-[ds]: https://supysonic.readthedocs.io/en/latest/setup/daemon.html
-[st]: https://www.freedesktop.org/software/systemd/man/systemd.timer.html
+[tr]: https://github.com/ogarcia/tocata#readme
